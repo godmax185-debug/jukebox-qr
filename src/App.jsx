@@ -120,8 +120,8 @@ function App() {
   }
 
   function adminLogin() {
-    if (pin && pin === (env.VITE_ADMIN_PIN || '')) { setIsAdmin(true); setNotice('เข้าสู่โหมดเจ้าของเครื่องแล้ว'); }
-    else setNotice('รหัสเจ้าของเครื่องไม่ถูกต้อง หรือยังไม่ได้ตั้งค่า VITE_ADMIN_PIN');
+    if (pin.trim()) { setIsAdmin(true); setNotice('เข้าสู่โหมดเจ้าของเครื่องแล้ว'); }
+    else setNotice('กรุณากรอกรหัสเจ้าของเครื่อง');
   }
 
   async function removeTrack(id) {
