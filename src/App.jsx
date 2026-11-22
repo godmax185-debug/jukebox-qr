@@ -21,6 +21,7 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [demoQueue, setDemoQueue] = useState([]);
   const playerRef = useRef(null);
+  const nextTrackRef = useRef(null);
   const isHost = !isRequest;
 
   const loadQueue = async () => {
@@ -57,7 +58,7 @@ function App() {
         playerVars: { autoplay: 1, playsinline: 1, enablejsapi: 1, origin: location.origin },
         events: {
           onReady: e => e.target.playVideo(),
-          onStateChange: e => { if (e.data === 0) nextTrack(); },
+          onStateChange: e => { if (e.data === 0) nextTrackRef.current?.(); },
           onError: () => setNotice('วิดีโอนี้เล่นไม่ได้ อาจถูกจำกัดการฝังหรือไม่พร้อมให้บริการ')
         }
       });
@@ -105,7 +106,7 @@ function App() {
   }
 
   async function nextTrack() {
-    if (!isAdmin) { setNotice('เฉพาะเจ้าของเครื่องเท่านั้นที่เลื่อนคิวได้'); return; }
+    if (!isAdmin) { setNotice('กรุณาเข้าสู่ระบบเจ้าของเครื่องก่อนเริ่มเล่นเพลง'); return; }
     if (!supabase) {
       const next = demoQueue[0] || null;
       setDemoQueue(q => q.slice(1)); setQueue(q => q.slice(1)); setCurrent(next);
@@ -116,6 +117,7 @@ function App() {
     await loadQueue();
     setCurrent(data?.video_id ? data : null);
   }
+  nextTrackRef.current = nextTrack;
 
   function adminLogin() {
     if (pin.trim()) { setIsAdmin(true); setNotice('เข้าสู่โหมดเจ้าของเครื่องแล้ว'); }
