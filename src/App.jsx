@@ -15,6 +15,7 @@ function App() {
   const [queue, setQueue] = useState([]);
   const [current, setCurrent] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [activePage, setActivePage] = useState('home');
   const [notice, setNotice] = useState(ready ? 'เชื่อมต่อระบบแล้ว' : 'โหมดทดลอง: ยังไม่ได้ตั้งค่าฐานข้อมูล');
   const [pin, setPin] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
@@ -141,6 +142,22 @@ function App() {
     });
   }
 
+  const youtubeSearchPanel = <section className="request-page youtube-discovery">
+    <h2>ค้นหาเพลงจาก YouTube</h2>
+    <p>ค้นหาจากชื่อเพลง ศิลปิน หรือคำที่จำได้ แล้วเลือกจากปกวิดีโอ</p>
+    <form onSubmit={searchYouTube} className="search">
+      <input value={query} onChange={e => setQuery(e.target.value)} placeholder="ลองพิมพ์ชื่อเพลง ศิลปิน หรือเนื้อเพลงที่จำได้..." />
+      <button disabled={busy}>{busy ? 'กำลังค้นหา...' : 'ค้นหา YouTube'}</button>
+    </form>
+    <div className="results">{results.map(t => <article className="track discovery-track" key={t.id}>
+      <img src={t.thumb} alt="" />
+      <div className="track-info"><strong>{t.title}</strong><small>{t.channel}</small><a href={`https://www.youtube.com/watch?v=${t.id}`} target="_blank" rel="noreferrer">ดูวิดีโอบน YouTube</a></div>
+      <button className="add" onClick={() => addTrack(t)}>＋ เพิ่มเข้าคิว</button>
+    </article>)}</div>
+    {!results.length && <div className="empty">{busy ? 'กำลังค้นหาวิดีโอ...' : 'พิมพ์คำค้นหาเพื่อแสดงปกเพลงและวิดีโอจาก YouTube'}</div>}
+    <h3>คิวเพลง ({queue.length + (current ? 1 : 0)})</h3><Queue queue={queue} current={current} onRemove={removeTrack} admin={isAdmin}/>
+  </section>;
+
   return <main className="shell">
     <header><div className="brand"><span className="logo">♫</span><div><h1>JUKEBOX <b>QR</b></h1><small>เพลงของคุณ คิวของทุกคน</small></div></div><span className="live"><i/> {ready ? 'ONLINE' : 'DEMO'}</span></header>
     <div className="notice">{notice}</div>
@@ -150,6 +167,11 @@ function App() {
       <div className="results">{results.map(t => <article className="track" key={t.id}><img src={t.thumb} alt=""/><div className="track-info"><strong>{t.title}</strong><small>{t.channel}</small></div><button className="add" onClick={() => addTrack(t)}>＋ เพิ่ม</button></article>)}</div>
       <h3>คิวเพลง ({queue.length + (current ? 1 : 0)})</h3><Queue queue={queue} current={current}/>
     </section> : <>
+      <nav className="main-tabs" aria-label="เมนูหลัก">
+        <button className={activePage === 'home' ? 'selected' : ''} onClick={() => setActivePage('home')}>หน้าหลัก</button>
+        <button className={activePage === 'search' ? 'selected' : ''} onClick={() => setActivePage('search')}>ค้นหา YouTube</button>
+      </nav>
+      {activePage === 'search' ? youtubeSearchPanel : <>
       <section className="hero">
         <div className="player-wrap"><div id="yt-player"><div className="player-empty"><span>♫</span><b>JUKEBOX PLAYER</b><small>เพลงจะเล่นที่นี่เมื่อเริ่มคิว</small></div></div></div>
         <div className="now"><small>NOW PLAYING · ลำดับที่ 1</small><h2>{current?.title || 'ยังไม่มีเพลงกำลังเล่น'}</h2><p>{current?.channel || 'เพิ่มเพลงผ่าน QR Code เพื่อเริ่มต้น'}</p><div className="now-actions"><button className={`effect-toggle ${mascotOn ? 'active' : ''}`} onClick={toggleMascots}>{mascotOn ? '✨ เอฟเฟกต์เต้น: เปิด' : 'เอฟเฟกต์เต้น: ปิด'}</button></div></div>
@@ -159,6 +181,7 @@ function App() {
         <section className="panel"><div className="panel-head"><h3>คิวเพลง <span>{queue.length + (current ? 1 : 0)}</span></h3><small>เพลงใหม่ต่อท้ายเสมอ</small></div><Queue queue={queue} current={current} onRemove={removeTrack} admin={isAdmin}/></section>
         <section className="panel qr-panel"><h3>สแกนเพื่อขอเพลง</h3><div className="qr"><QRCodeSVG value={`${roomUrl}/?request=1`} size={190} bgColor="#ffffff" fgColor="#111111" level="H"/></div><p>สแกน QR Code ด้วยกล้องมือถือ</p><a href={`${roomUrl}/?request=1`} target="_blank" rel="noreferrer">เปิดหน้าขอเพลง</a><div className="admin"><h4>เจ้าของเครื่อง</h4>{!isAdmin ? <><input type="password" value={pin} onChange={e => setPin(e.target.value)} placeholder="รหัสเจ้าของเครื่อง"/><button onClick={adminLogin}>เข้าสู่ระบบควบคุม</button></> : <><span className="admin-ok">● ควบคุมเครื่องได้</span><button onClick={nextTrack}>เล่นเพลงถัดไป</button><button className="ghost" onClick={() => setIsAdmin(false)}>ออกจากโหมดควบคุม</button></>}</div></section>
       </div>
+      </>}
     </>}
     <footer>JUKEBOX QR · ระบบจัดคิวเพลงแบบไม่แทรกกลางเพลง</footer>
   </main>;
