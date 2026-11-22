@@ -161,12 +161,7 @@ function App() {
   return <main className="shell">
     <header><div className="brand"><span className="logo">♫</span><div><h1>JUKEBOX <b>QR</b></h1><small>เพลงของคุณ คิวของทุกคน</small></div></div><span className="live"><i/> {ready ? 'ONLINE' : 'DEMO'}</span></header>
     <div className="notice">{notice}</div>
-    {isRequest ? <section className="request-page">
-      <h2>ขอเพลงที่คุณอยากฟัง</h2><p>ค้นหาเพลงจาก YouTube แล้วส่งเข้าคิวได้เลย</p>
-      <form onSubmit={searchYouTube} className="search"><input value={query} onChange={e => setQuery(e.target.value)} placeholder="พิมพ์ชื่อเพลงหรือศิลปิน..." /><button disabled={busy}>{busy ? 'กำลังค้นหา' : 'ค้นหาเพลง'}</button></form>
-      <div className="results">{results.map(t => <article className="track" key={t.id}><img src={t.thumb} alt=""/><div className="track-info"><strong>{t.title}</strong><small>{t.channel}</small></div><button className="add" onClick={() => addTrack(t)}>＋ เพิ่ม</button></article>)}</div>
-      <h3>คิวเพลง ({queue.length + (current ? 1 : 0)})</h3><Queue queue={queue} current={current}/>
-    </section> : <>
+    {isRequest ? youtubeSearchPanel : <>
       <nav className="main-tabs" aria-label="เมนูหลัก">
         <button className={activePage === 'home' ? 'selected' : ''} onClick={() => setActivePage('home')}>หน้าหลัก</button>
         <button className={activePage === 'search' ? 'selected' : ''} onClick={() => setActivePage('search')}>ค้นหา YouTube</button>
