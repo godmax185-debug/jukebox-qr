@@ -20,9 +20,6 @@ function App() {
   const [pin, setPin] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [demoQueue, setDemoQueue] = useState([]);
-  const [mascotOn, setMascotOn] = useState(() => {
-    try { return localStorage.getItem('jukebox-mascots') !== 'off'; } catch { return true; }
-  });
   const playerRef = useRef(null);
   const isHost = !isRequest;
 
@@ -134,14 +131,6 @@ function App() {
     } else { setDemoQueue(q => q.filter(x => x.id !== id)); setQueue(q => q.filter(x => x.id !== id)); }
   }
 
-  function toggleMascots() {
-    setMascotOn(v => {
-      const next = !v;
-      try { localStorage.setItem('jukebox-mascots', next ? 'on' : 'off'); } catch {}
-      return next;
-    });
-  }
-
   const youtubeSearchPanel = <section className="request-page youtube-discovery">
     <h2>ค้นหาเพลงจาก YouTube</h2>
     <p>ค้นหาจากชื่อเพลง ศิลปิน หรือคำที่จำได้ แล้วเลือกจากปกวิดีโอ</p>
@@ -169,9 +158,8 @@ function App() {
       {activePage === 'search' ? youtubeSearchPanel : <>
       <section className="hero">
         <div className="player-wrap"><div id="yt-player"><div className="player-empty"><span>♫</span><b>JUKEBOX PLAYER</b><small>เพลงจะเล่นที่นี่เมื่อเริ่มคิว</small></div></div></div>
-        <div className="now"><small>NOW PLAYING · ลำดับที่ 1</small><h2>{current?.title || 'ยังไม่มีเพลงกำลังเล่น'}</h2><p>{current?.channel || 'เพิ่มเพลงผ่าน QR Code เพื่อเริ่มต้น'}</p><div className="now-actions"><button className={`effect-toggle ${mascotOn ? 'active' : ''}`} onClick={toggleMascots}>{mascotOn ? '✨ เอฟเฟกต์เต้น: เปิด' : 'เอฟเฟกต์เต้น: ปิด'}</button></div></div>
+        <div className="now"><small>NOW PLAYING · ลำดับที่ 1</small><h2>{current?.title || 'ยังไม่มีเพลงกำลังเล่น'}</h2><p>{current?.channel || 'เพิ่มเพลงผ่าน QR Code เพื่อเริ่มต้น'}</p></div>
       </section>
-      {mascotOn && <section className="mascot-stage" aria-label="เสือและฮิปโปเต้น"><div className="mascot-caption"><span>🐯</span> PARTY TIME <span>🦛</span></div><img className="mascot-art" src="/assets/tiger-hippo-duo.png" alt="เสืออ้วนและฮิปโปอ้วนยืนเต้นคู่กัน"/></section>}
       <div className="grid">
         <section className="panel"><div className="panel-head"><h3>คิวเพลง <span>{queue.length + (current ? 1 : 0)}</span></h3><small>เพลงใหม่ต่อท้ายเสมอ</small></div><Queue queue={queue} current={current} onRemove={removeTrack} admin={isAdmin}/></section>
         <section className="panel qr-panel"><h3>สแกนเพื่อขอเพลง</h3><div className="qr"><QRCodeSVG value={`${roomUrl}/?request=1`} size={190} bgColor="#ffffff" fgColor="#111111" level="H"/></div><p>สแกน QR Code ด้วยกล้องมือถือ</p><a href={`${roomUrl}/?request=1`} target="_blank" rel="noreferrer">เปิดหน้าขอเพลง</a><div className="admin"><h4>เจ้าของเครื่อง</h4>{!isAdmin ? <><input type="password" value={pin} onChange={e => setPin(e.target.value)} placeholder="รหัสเจ้าของเครื่อง"/><button onClick={adminLogin}>เข้าสู่ระบบควบคุม</button></> : <><span className="admin-ok">● ควบคุมเครื่องได้</span><button onClick={nextTrack}>เล่นเพลงถัดไป</button><button className="ghost" onClick={() => setIsAdmin(false)}>ออกจากโหมดควบคุม</button></>}</div></section>
