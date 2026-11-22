@@ -81,3 +81,15 @@ grant execute on function public.add_track(text,text,text,text,text) to anon, au
 grant execute on function public.admin_next(text) to anon, authenticated;
 grant execute on function public.admin_remove_track(text,uuid) to anon, authenticated;
 grant select on public.queue, public.room_state to anon, authenticated;
+
+
+-- Verify the admin PIN before showing admin-only controls in the app.
+create or replace function public.verify_admin_pin(p_pin text)
+returns boolean language plpgsql security definer set search_path=public as $$
+declare good boolean;
+begin
+ select (admin_pin_hash = crypt(p_pin,admin_pin_hash)) into good
+ from app_config where id=1;
+ return coalesce(good,false);
+end; $$;
+grant execute on function public.verify_admin_pin(text) to anon, authenticated;
