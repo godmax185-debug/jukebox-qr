@@ -45,37 +45,46 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!isHost || !current?.video_id) return;
+    if (!current?.video_id || (!isRequest && activePage !== 'home')) return;
+    const playerId = isRequest ? 'yt-request-player' : 'yt-player';
     function initPlayer() {
+      const mount = document.getElementById(playerId);
+      if (!mount) return;
       if (playerRef.current) {
-        try { playerRef.current.loadVideoById(current.video_id); } catch {}
-        return;
+        const iframe = playerRef.current.getIframe?.();
+        if (iframe && !iframe.isConnected) {
+          try { playerRef.current.destroy(); } catch {}
+          playerRef.current = null;
+        } else {
+          try { playerRef.current.loadVideoById(current.video_id); } catch {}
+          return;
+        }
       }
-      const mount = document.getElementById('yt-player');
-      if (!mount || !window.YT?.Player) return;
-      playerRef.current = new window.YT.Player('yt-player', {
+      if (!window.YT?.Player) return;
+      playerRef.current = new window.YT.Player(playerId, {
         width: '100%', height: '100%', videoId: current.video_id,
-        playerVars: { autoplay: 1, playsinline: 1, enablejsapi: 1, origin: location.origin },
+        playerVars: { autoplay: 1, controls: 1, playsinline: 1, enablejsapi: 1, rel: 0, origin: location.origin },
         events: {
           onReady: e => e.target.playVideo(),
-          onStateChange: e => { if (e.data === 0) nextTrackRef.current?.(); },
+          onStateChange: e => { if (!isRequest && e.data === 0) nextTrackRef.current?.(); },
           onError: () => setNotice('วิดีโอนี้เล่นไม่ได้ อาจถูกจำกัดการฝังหรือไม่พร้อมให้บริการ')
         }
       });
     }
     if (window.YT?.Player) initPlayer();
     else {
-      const existing = document.querySelector('script[data-youtube-iframe-api]');
-      if (!existing) {
-        const script = document.createElement('script');
+      const previous = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => { previous?.(); initPlayer(); };
+      let script = document.querySelector('script[data-youtube-iframe-api]');
+      if (!script) {
+        script = document.createElement('script');
         script.dataset.youtubeIframeApi = 'true';
         script.src = 'https://www.youtube.com/iframe_api';
         document.head.appendChild(script);
       }
-      const previous = window.onYouTubeIframeAPIReady;
-      window.onYouTubeIframeAPIReady = () => { previous?.(); initPlayer(); };
     }
-  }, [current?.video_id, isHost]);
+    return () => {};
+  }, [current?.video_id, isHost, isRequest, activePage]);
 
   async function searchYouTube(e) {
     e?.preventDefault();
@@ -152,7 +161,19 @@ function App() {
   return <main className="shell">
     <header><div className="brand"><span className="logo">♫</span><div><h1>JUKEBOX <b>QR</b></h1><small>เพลงของคุณ คิวของทุกคน</small></div></div><span className="live"><i/> {ready ? 'ONLINE' : 'DEMO'}</span></header>
     <div className="notice">{notice}</div>
-    {isRequest ? youtubeSearchPanel : <>
+    {isRequest ? <>
+      <section className="request-video-panel">
+        <h2>กำลังเล่นบน Jukebox</h2>
+        <div className="player-wrap request-player-wrap">
+          <div id="yt-request-player">
+            {!current?.video_id && <div className="player-empty"><span>♫</span><b>JUKEBOX PLAYER</b><small>รอเจ้าของเครื่องเริ่มเพลง</small></div>}
+          </div>
+        </div>
+        <div className="request-now"><strong>{current?.title || 'ยังไม่มีเพลงกำลังเล่น'}</strong><small>{current?.channel || 'เมื่อเริ่มเพลง วิดีโอจะแสดงที่นี่'}</small></div>
+        <p className="request-player-hint">หากวิดีโอไม่เริ่มเอง ให้แตะปุ่มเล่นบนวิดีโอ (มือถืออาจบล็อกการเล่นอัตโนมัติ)</p>
+      </section>
+      {youtubeSearchPanel}
+    </> : <>
       <nav className="main-tabs" aria-label="เมนูหลัก">
         <button className={activePage === 'home' ? 'selected' : ''} onClick={() => setActivePage('home')}>หน้าหลัก</button>
         <button className={activePage === 'search' ? 'selected' : ''} onClick={() => setActivePage('search')}>ค้นหา YouTube</button>
