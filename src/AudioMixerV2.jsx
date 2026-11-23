@@ -1,6 +1,6 @@
 import React,{useEffect,useRef,useState} from 'react';
 
-export default function AudioMixerV2({hidden=false}){
+export default function AudioMixerV2({hidden=false,youtubeVolume=70,onYoutubeVolumeChange}){
  const audioRef=useRef(null),ctxRef=useRef(null),nodesRef=useRef(null),urlRef=useRef('');
  const [file,setFile]=useState(null),[fileKey,setFileKey]=useState(0),[playing,setPlaying]=useState(false);
  const [bass,setBass]=useState(0),[mid,setMid]=useState(0),[treble,setTreble]=useState(0);
@@ -20,6 +20,7 @@ export default function AudioMixerV2({hidden=false}){
  };
  const apply=()=>{const n=nodesRef.current;if(!n)return;n.bassF.gain.setTargetAtTime(bass,n.ctx.currentTime,.015);n.midF.gain.setTargetAtTime(mid,n.ctx.currentTime,.015);n.trebleF.gain.setTargetAtTime(treble,n.ctx.currentTime,.015);n.highpass.frequency.setTargetAtTime(Math.max(20,hp),n.ctx.currentTime,.015);n.lowpass.frequency.setTargetAtTime(Math.max(hp+1,lp),n.ctx.currentTime,.015);n.wetGain.gain.setTargetAtTime(wet/100,n.ctx.currentTime,.015);n.dry.gain.setTargetAtTime(1-wet/100,n.ctx.currentTime,.015);n.masterGain.gain.setTargetAtTime(master/100,n.ctx.currentTime,.015)};
  useEffect(()=>{apply()},[bass,mid,treble,hp,lp,wet,master]);
+ useEffect(()=>{setMaster(youtubeVolume)},[youtubeVolume]);
  useEffect(()=>{const n=nodesRef.current;if(n&&n.convolver)n.convolver.buffer=buildImpulse(n.ctx,room)},[room]);
  useEffect(()=>()=>{if(urlRef.current)URL.revokeObjectURL(urlRef.current);ctxRef.current?.close()},[]);
  const choose=e=>{const f=e.target.files?.[0];if(!f)return;if(urlRef.current)URL.revokeObjectURL(urlRef.current);urlRef.current=URL.createObjectURL(f);setFile(f);setFileKey(k=>k+1);setPlaying(false);ctxRef.current?.close();ctxRef.current=null;nodesRef.current=null};
@@ -31,6 +32,6 @@ export default function AudioMixerV2({hidden=false}){
  <div className="mixer-section"><h3>3-Band EQ <small>Gain · dB</small></h3><div className="mixer-sliders">{[['Bass',bass,setBass],['Mid',mid,setMid],['Treble',treble,setTreble]].map(([name,val,set])=><label key={name}><b>{name}</b><span>{val>0?'+':''}{val} dB</span><input type="range" min="-12" max="12" step="1" value={val} onChange={e=>set(Number(e.target.value))}/></label>)}</div></div>
  <div className="mixer-section"><h3>Crossover / Filter</h3><label className="mixer-range"><span>High-pass · ตัดเสียงต่ำ</span><b>{hp} Hz</b><input type="range" min="20" max="1000" step="10" value={hp} onChange={e=>setHp(Number(e.target.value))}/></label><label className="mixer-range"><span>Low-pass · ตัดเสียงสูง</span><b>{lp>=20000?'20 kHz':lp+' Hz'}</b><input type="range" min="1000" max="20000" step="100" value={lp} onChange={e=>setLp(Number(e.target.value))}/></label></div>
  <div className="mixer-section"><h3>Reverb</h3><label className="mixer-range"><span>Wet mix</span><b>{wet}%</b><input type="range" min="0" max="100" value={wet} onChange={e=>setWet(Number(e.target.value))}/></label><label className="mixer-range"><span>Room decay</span><b>{room.toFixed(1)} s</b><input type="range" min="0.5" max="4" step="0.1" value={room} onChange={e=>setRoom(Number(e.target.value))}/></label><p className="mixer-note">ปรับความยาวเสียงก้องและสัดส่วนเสียงสะท้อนแบบเรียลไทม์</p></div>
- <div className="mixer-section"><h3>Master Output</h3><label className="mixer-range"><span>ระดับเสียง</span><b>{master}%</b><input type="range" min="0" max="100" value={master} onChange={e=>setMaster(Number(e.target.value))}/></label></div>
- <div className="mixer-warning">Mixer V2 ประมวลผลไฟล์เสียงที่เลือกเท่านั้น ไม่กระทบเพลง YouTube ในคิวหลัก</div></section>
+ <div className="mixer-section"><h3>Master Output</h3><label className="mixer-range"><span>ระดับเสียง</span><b>{master}%</b><input type="range" min="0" max="100" value={master} onChange={e=>{const value=Number(e.target.value);setMaster(value);onYoutubeVolumeChange?.(value)}}/></label></div>
+ <div className="mixer-warning">Master Output ควบคุม Volume ของ YouTube ในคิวหลักได้ ส่วน EQ / Crossover / Reverb ใช้กับไฟล์เสียงที่เลือกเท่านั้น</div></section>
 }
