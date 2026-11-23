@@ -10,3 +10,24 @@
 @media(max-width:520px){.audio-mixer{padding:12px}.mixer-header{align-items:flex-start;flex-direction:column}.mixer-upload{align-items:stretch}.mixer-upload button{width:100%}.mixer-sliders{gap:6px}.mixer-sliders label{padding:8px}.mixer-sliders label b{font-size:11px}}
 
 .mixer-hidden{display:none!important}
+
+/* THITIWAT HUP orange and black theme */
+:root{color:#f7f7f7;background:#101010}
+body,.request-app,.admin-app{background:#101010;color:#f7f7f7}
+.brand-mark,.login-logo{background:#ff7900;color:#101010}
+.request-header,.admin-header{background:#171717;border-color:#3b2615}
+.request-search input:focus{border-color:#ff7900}
+.request-search button,.result-info button,.login-card>button,.toolbar-actions button.active,.skip-button{background:#ff7900;color:#101010}
+.result-card,.queue-item,.login-card,.sound-controls,.audio-mixer{background:#1b1b1b;border-color:#3c2a18}
+.queue-item.current{background:#282019;border-color:#ff7900}
+.queue-status,.current .queue-status{color:#ff9b43}
+.online-dot{color:#ff9b43}
+.toolbar-actions button{background:#252525;border-color:#4b321c}
+.toolbar-actions button.active{border-color:#ff7900}
+.toolbar-actions .logout{background:#402416;color:#ffb36b;border-color:#6d3b12}
+.volume-control input,.mixer-sliders input,.mixer-range input{accent-color:#ff7900}
+.mixer-upload button,.mixer-presets button{background:#292929;color:#ffb36b;border-color:#553719}
+.file-pick{background:#292929;border-color:#553719;color:#ffb36b}
+.skip-button{background:#ff7900}
+.admin-notice,.request-notice{background:#292019;color:#ffb36b}
+.video-placeholder{color:#ff7900}
