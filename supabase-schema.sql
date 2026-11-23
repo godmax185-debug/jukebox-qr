@@ -46,14 +46,19 @@ create policy "public can read room" on public.room_state for select using (true
 create or replace function public.add_track(
  p_video_id text, p_title text, p_channel text, p_thumbnail text, p_requester text default 'ผู้ใช้ QR'
 ) returns uuid language plpgsql security definer set search_path=public, extensions as $
-declare new_id uuid;
+declare new_id uuid; existing_id uuid;
 begin
  if length(p_video_id)>20 or length(p_title)>300 then raise exception 'ข้อมูลเพลงไม่ถูกต้อง'; end if;
+ -- Prevent adding a duplicate that is already waiting or playing.
+ select id into existing_id from queue
+ where video_id=p_video_id and status in ('waiting','playing')
+ order by position limit 1 for update;
+ if existing_id is not null then return existing_id; end if;
  insert into queue(video_id,title,channel,thumbnail,requester)
  values(p_video_id,p_title,p_channel,p_thumbnail,left(coalesce(p_requester,'ผู้ใช้ QR'),60))
  returning id into new_id;
  return new_id;
-end; $$;
+end; $;
 
 create or replace function public.admin_next(p_pin text)
 returns json language plpgsql security definer set search_path=public, extensions as $
