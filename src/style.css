@@ -33,11 +33,11 @@ body,.request-app,.admin-app{background:#101010;color:#f7f7f7}
 .video-placeholder{color:#ff7900}
 
 
-/* YouTube-style autocomplete inside search input only */
+/* YouTube search suggestions: flat list, no orange chips or framed box */
 .request-search{z-index:20}
 .search-input-wrap{position:relative;flex:1;min-width:0}
 .search-input-wrap>input{width:100%}
-.youtube-autocomplete{position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:50;background:#202020;border:1px solid #393939;border-radius:12px;overflow:hidden;box-shadow:0 10px 26px rgba(0,0,0,.5);max-height:360px;overflow-y:auto}
-.youtube-autocomplete button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;background:transparent;color:#f5f5f5;padding:11px 14px;font-size:14px;line-height:1.35}
+.youtube-autocomplete{position:absolute;top:100%;left:0;right:0;z-index:50;background:#212121;border:0;border-radius:0;box-shadow:none;max-height:360px;overflow-y:auto;padding:0;margin:0}
+.youtube-autocomplete button{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:0;border-radius:0;background:transparent;color:#f1f1f1;padding:12px 16px;font-size:15px;line-height:1.4}
 .youtube-autocomplete button:hover,.youtube-autocomplete button.active{background:#303030}
-.youtube-autocomplete .suggest-icon{color:#aaa;font-size:18px;width:18px;flex:none}
+.youtube-autocomplete .suggest-icon{color:#aaa;font-size:18px;width:20px;flex:none}
