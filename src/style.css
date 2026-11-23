@@ -41,3 +41,9 @@ body,.request-app,.admin-app{background:#101010;color:#f7f7f7}
 .youtube-autocomplete button{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:0;border-radius:0;background:transparent;color:#f1f1f1;padding:12px 16px;font-size:15px;line-height:1.4}
 .youtube-autocomplete button:hover,.youtube-autocomplete button.active{background:#303030}
 .youtube-autocomplete .suggest-icon{color:#aaa;font-size:18px;width:20px;flex:none}
+
+/* Mixer version selector: retain old mixer as a selectable fallback */
+.mixer-version-switch{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.mixer-version-switch button{border:1px solid #4b321c;background:#252525;color:#d8d8d8;border-radius:9px;padding:9px 12px;font-size:12px}
+.mixer-version-switch button.active{background:#ff7900;color:#101010;border-color:#ff7900;font-weight:700}
+.mixer-v2 .mixer-header small{color:#ff9b43}
