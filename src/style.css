@@ -31,3 +31,9 @@ body,.request-app,.admin-app{background:#101010;color:#f7f7f7}
 .skip-button{background:#ff7900}
 .admin-notice,.request-notice{background:#292019;color:#ffb36b}
 .video-placeholder{color:#ff7900}
+
+
+/* Suggested song searches */
+.suggested-searches{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 16px}
+.suggested-searches button{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:#242424;border:1px solid #ff7a00;color:#ffb347;border-radius:999px;padding:8px 12px;font-size:13px;cursor:pointer}
+.suggested-searches button:disabled{opacity:.55;cursor:wait}
